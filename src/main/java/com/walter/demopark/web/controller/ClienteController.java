@@ -84,20 +84,18 @@ public class ClienteController {
         return ResponseEntity.ok(PageableMapper.toDto(clientes));
     }
 
-    @Operation(summary = "Buscar Cliente por Id", description = "Requisição exige um Bearer Token, acesso restrito a ADMIN",
+    @Operation(summary = "Buscar Cliente por Id", description = "Requisição exige um Bearer Token, acesso restrito a CLIENTE",
             security = @SecurityRequirement(name = "security"),
             responses = {
-                    @ApiResponse(responseCode = "200", description = "Cliente encontrado com sucesso",
+                    @ApiResponse(responseCode = "200", description = "Recurso recuperado com sucesso",
                             content = @Content(mediaType = "application/json", schema = @Schema(implementation = UsuarioResponseDto.class))),
                     @ApiResponse(responseCode = "403", description = "Acesso negado ao perfil de CLIENTE",
                             content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))),
-                    @ApiResponse(responseCode = "404", description = "Cliente não encontrado",
-                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class)))
-            })
-    @GetMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ClienteResponseDto> findById(@PathVariable Long id) {
-        Cliente cliente = clienteService.findById(id);
+                                })
+    @GetMapping("/detalhes")
+    @PreAuthorize("hasRole('CLIENTE')")
+    public ResponseEntity<ClienteResponseDto> getclientDetails(@AuthenticationPrincipal JwtUserDetails jwtUserDetails) {
+        Cliente cliente = clienteService.findByUserId(jwtUserDetails.getId());
         return ResponseEntity.ok(ClienteMapper.toDto(cliente));
     }
 

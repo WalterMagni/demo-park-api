@@ -31,6 +31,11 @@ public class ClienteService {
         return clienteRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(String.format("Cliente id=%d não encontrado", id)));
     }
 
+    @Transactional(readOnly = true)
+    public Cliente findByUserId(Long id) {
+        return clienteRepository.buscarPorClienteId(id);
+    }
+
     //POST
     @Transactional
     public Cliente save(Cliente cliente) {
@@ -40,4 +45,6 @@ public class ClienteService {
             throw new CpfUniqueViolationException(String.format("O cpf %s já existe no sistema", cliente.getCpf()));
         }
     }
+
+
 }
