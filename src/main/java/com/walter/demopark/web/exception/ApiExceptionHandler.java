@@ -1,9 +1,6 @@
 package com.walter.demopark.web.exception;
 
-import com.walter.demopark.exception.CpfUniqueViolationException;
-import com.walter.demopark.exception.EntityNotFoundException;
-import com.walter.demopark.exception.PasswordInvalidException;
-import com.walter.demopark.exception.UsernameUniqueViolationException;
+import com.walter.demopark.exception.*;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -39,7 +36,7 @@ public class ApiExceptionHandler {
                 .body(new ErrorMessage(request, HttpStatus.UNPROCESSABLE_ENTITY, "Parâmetros inválidos", result));
     }
 
-    @ExceptionHandler({UsernameUniqueViolationException.class, CpfUniqueViolationException.class})
+    @ExceptionHandler({UsernameUniqueViolationException.class, CpfUniqueViolationException.class, CodigoUniqueViolationException.class})
     public ResponseEntity<ErrorMessage> uniqueViolationException(RuntimeException ex,
                                                                         HttpServletRequest request) {
         log.error("api Error - ", ex);
@@ -48,8 +45,6 @@ public class ApiExceptionHandler {
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(new ErrorMessage(request, HttpStatus.CONFLICT, ex.getMessage()));
     }
-
-
 
     @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<ErrorMessage> entityNotFoundException(RuntimeException ex,

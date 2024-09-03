@@ -12,12 +12,12 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class VagaCreateDTO {
+public class VagaCreateDto {
 
     @NotBlank
     @Size(min = 4, max = 4)
     private String codigo;
     @NotBlank
-    @Pattern(regexp = "LIBERADA|OCUPADA")
+    @Pattern(regexp = "LIVRE|OCUPADA")
     private String status;
 }

@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor
-public class VagaResponseDTO {
+public class VagaResponseDto {
 
     private Long id;
     private String codigo;
