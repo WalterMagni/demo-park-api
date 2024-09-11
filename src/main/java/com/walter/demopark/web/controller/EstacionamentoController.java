@@ -1,6 +1,7 @@
 package com.walter.demopark.web.controller;
 
 import com.walter.demopark.entity.ClienteVaga;
+import com.walter.demopark.service.ClienteVagaService;
 import com.walter.demopark.service.EstacionamentoService;
 import com.walter.demopark.web.dto.estacionamento.EstacionamentoCreateDto;
 import com.walter.demopark.web.dto.estacionamento.EstacionamentoResponseDto;
@@ -17,10 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
@@ -31,6 +29,9 @@ public class EstacionamentoController {
 
     @Autowired
     private EstacionamentoService estacionamentoService;
+
+    @Autowired
+    private ClienteVagaService clienteVagaService;
 
     @Operation(summary = "Operação de check-in", description = "Recurso para dar entrada de um veículo no estacionamento. " +
             "Requisição exige uso de um bearer token. Acesso restrito a Role='ADMIN'",
@@ -66,5 +67,14 @@ public class EstacionamentoController {
 
         return ResponseEntity.created(location).body(responseDto);
     }
+
+    @GetMapping("/check-in/{recibo}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'CLIENTE')")
+    public ResponseEntity<EstacionamentoResponseDto> getByRecibo(@PathVariable String recibo) {
+        ClienteVaga clienteVaga = clienteVagaService.findByRecibo(recibo);
+        EstacionamentoResponseDto dto = ClienteVagaMapper.toDto(clienteVaga);
+        return ResponseEntity.ok(dto);
+    }
+
 
 }
