@@ -31,4 +31,9 @@ public class VagaService {
                 () -> new EntityNotFoundException(String.format("Vaga %s não encontrada", Codigo)));
     }
 
+    public Vaga buscarProVagaLivre() {
+        return vagaRepository.findFirstByStatus(Vaga.StatusVaga.LIVRE)
+                .orElseThrow(() -> new EntityNotFoundException("Vaga livre não encontrada"));
+    }
+
 }
