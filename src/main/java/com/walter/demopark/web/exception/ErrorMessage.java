@@ -3,6 +3,7 @@ package com.walter.demopark.web.exception;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindingResult;
@@ -16,6 +17,7 @@ import java.util.Map;
  * o método HTTP, o status do erro e uma mensagem descritiva.
  * Além disso, pode incluir uma lista de erros específicos em casos de validação de campos.
  */
+@Getter @Setter
 public class ErrorMessage {
 
     /**
@@ -100,5 +102,6 @@ public class ErrorMessage {
             this.errors.put(error.getField(), error.getDefaultMessage()); // Adiciona o campo e sua mensagem de erro
         });
     }
+
 }
 
