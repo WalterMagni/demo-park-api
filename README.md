@@ -16,21 +16,6 @@ Swagger/OpenAPI para documentação da API
 H2 Database para ambiente de desenvolvimento
 Maven para gerenciamento de dependências
 
-Estrutura do Projeto
-O projeto está organizado da seguinte maneira:
-src
-└── main
-    ├── java
-    │   └── com.example.demo.park
-    │       ├── controller      # Controladores REST (APIs)
-    │       ├── dto             # Data Transfer Objects (DTOs)
-    │       ├── model           # Entidades do domínio
-    │       ├── repository      # Repositórios JPA
-    │       ├── security        # Configurações de segurança
-    │       ├── service         # Lógica de negócios
-    │       └── mapper          # Mapeamento de entidades e DTOs
-    └── resources
-        └── application.yml     # Configurações do projeto
 
 Endpoints Principais
 1. Vagas
