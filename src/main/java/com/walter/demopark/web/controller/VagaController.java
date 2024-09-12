@@ -23,7 +23,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
 
-@Tag(name = "Vagas", description = "Contem todas as operações de vagas")
+@Tag(name = "Vagas", description = "Contém todas as operações de vagas")
 @RestController
 @RequestMapping("/api/v1/vagas")
 public class VagaController {
@@ -31,23 +31,25 @@ public class VagaController {
     @Autowired
     private VagaService vagaService;
 
-
-    @Operation(summary = "Criar uma nova vaga", description = "Recurso para criar uma nova vaga." +
-            "Requisição exige uso de um bearer token. Acesso restrito a Role='ADMIN'",
+    /**
+     * Endpoint para criar uma nova vaga.
+     * Requisição exige um Bearer Token. Acesso restrito a usuários com Role='ADMIN'.
+     */
+    @Operation(summary = "Criar uma nova vaga",
+            description = "Recurso para criar uma nova vaga. Requisição exige uso de um bearer token. Acesso restrito a Role='ADMIN'.",
             security = @SecurityRequirement(name = "security"),
             responses = {
                     @ApiResponse(responseCode = "201", description = "Recurso criado com sucesso",
                             headers = @Header(name = HttpHeaders.LOCATION, description = "URL do recurso criado")),
                     @ApiResponse(responseCode = "409", description = "Vaga já cadastrada",
-                            content = @Content(mediaType = " application/json;charset=UTF-8",
+                            content = @Content(mediaType = "application/json;charset=UTF-8",
                                     schema = @Schema(implementation = ErrorMessage.class))),
                     @ApiResponse(responseCode = "422", description = "Recurso não processado por falta de dados ou dados inválidos",
-                            content = @Content(mediaType = " application/json;charset=UTF-8",
+                            content = @Content(mediaType = "application/json;charset=UTF-8",
                                     schema = @Schema(implementation = ErrorMessage.class))),
-                    @ApiResponse(responseCode = "403", description = "Recurso não permito ao perfil de CLIENTE",
-                            content = @Content(mediaType = " application/json;charset=UTF-8",
-                                    schema = @Schema(implementation = ErrorMessage.class))
-                    )
+                    @ApiResponse(responseCode = "403", description = "Recurso não permitido ao perfil de CLIENTE",
+                            content = @Content(mediaType = "application/json;charset=UTF-8",
+                                    schema = @Schema(implementation = ErrorMessage.class)))
             })
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
@@ -63,20 +65,23 @@ public class VagaController {
         return ResponseEntity.created(location).build();
     }
 
-    @Operation(summary = "Localizar uma vaga", description = "Recurso para retornar uma vaga pelo seu código" +
-            "Requisição exige uso de um bearer token. Acesso restrito a Role='ADMIN'",
+    /**
+     * Endpoint para localizar uma vaga pelo seu código.
+     * Requisição exige um Bearer Token. Acesso restrito a usuários com Role='ADMIN'.
+     */
+    @Operation(summary = "Localizar uma vaga",
+            description = "Recurso para retornar uma vaga pelo seu código. Requisição exige uso de um bearer token. Acesso restrito a Role='ADMIN'.",
             security = @SecurityRequirement(name = "security"),
             responses = {
-                    @ApiResponse(responseCode = "200", description = "Recurso criado com sucesso",
-                            content = @Content(mediaType = " application/json;charset=UTF-8",
+                    @ApiResponse(responseCode = "200", description = "Recurso localizado com sucesso",
+                            content = @Content(mediaType = "application/json;charset=UTF-8",
                                     schema = @Schema(implementation = VagaResponseDto.class))),
                     @ApiResponse(responseCode = "404", description = "Vaga não localizada",
-                            content = @Content(mediaType = " application/json;charset=UTF-8",
+                            content = @Content(mediaType = "application/json;charset=UTF-8",
                                     schema = @Schema(implementation = ErrorMessage.class))),
-                    @ApiResponse(responseCode = "403", description = "Recurso não permito ao perfil de CLIENTE",
-                            content = @Content(mediaType = " application/json;charset=UTF-8",
-                                    schema = @Schema(implementation = ErrorMessage.class))
-                    )
+                    @ApiResponse(responseCode = "403", description = "Recurso não permitido ao perfil de CLIENTE",
+                            content = @Content(mediaType = "application/json;charset=UTF-8",
+                                    schema = @Schema(implementation = ErrorMessage.class)))
             })
     @GetMapping("/{codigo}")
     @PreAuthorize("hasRole('ADMIN')")
@@ -85,3 +90,4 @@ public class VagaController {
         return ResponseEntity.ok(VagaMapper.toDto(vaga));
     }
 }
+
