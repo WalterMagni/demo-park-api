@@ -141,7 +141,7 @@ public class ClienteController {
                             content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class)))
             })
     @PostMapping
-    @PreAuthorize("hasRole('CLIENTE')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ClienteResponseDto> create(@Valid @RequestBody ClienteCreateDto dto,
                                                      @AuthenticationPrincipal JwtUserDetails userDetails) {
         Cliente cliente = ClienteMapper.toCliente(dto);
