@@ -3,8 +3,10 @@ package com.walter.demopark.web.controller;
 import com.walter.demopark.entity.ClienteVaga;
 import com.walter.demopark.jwt.JwtUserDetails;
 import com.walter.demopark.repository.projection.ClienteVagaProjection;
+import com.walter.demopark.service.ClienteService;
 import com.walter.demopark.service.ClienteVagaService;
 import com.walter.demopark.service.EstacionamentoService;
+import com.walter.demopark.service.JasperService;
 import com.walter.demopark.web.dto.estacionamento.EstacionamentoCreateDto;
 import com.walter.demopark.web.dto.estacionamento.EstacionamentoResponseDto;
 import com.walter.demopark.web.dto.mapper.ClienteVagaMapper;
@@ -20,6 +22,8 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -27,12 +31,14 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.io.IOException;
 import java.net.URI;
 
 import static io.swagger.v3.oas.annotations.enums.ParameterIn.PATH;
@@ -47,6 +53,12 @@ public class EstacionamentoController {
 
     @Autowired
     private ClienteVagaService clienteVagaService;
+
+    @Autowired
+    private ClienteService clienteService;
+
+    @Autowired
+    private JasperService jasperService;
 
     /**
      * Operação de check-in.
@@ -214,5 +226,44 @@ public class EstacionamentoController {
         PageableDto dto = PageableMapper.toDto(projectionPage);
         return ResponseEntity.ok(dto);
     }
+
+    /**
+     * Gera um relatório PDF para o cliente autenticado.
+     * <p>
+     * Este endpoint é acessível apenas para usuários com a role 'CLIENTE'. O relatório é gerado
+     * com base no CPF do cliente associado ao usuário autenticado. O relatório é retornado como um
+     * arquivo PDF inline no corpo da resposta HTTP.
+     * </p>
+     *
+     * @param response HttpServletResponse onde o relatório PDF será escrito.
+     * @param user     O usuário autenticado, contendo as informações necessárias para buscar o cliente.
+     * @return ResponseEntity<Void> Retorna uma resposta HTTP com o status 200 (OK).
+     * @throws IOException Se ocorrer algum erro ao escrever o relatório no fluxo de saída da resposta.
+     */
+    @PreAuthorize("hasRole('CLIENTE')")
+    @GetMapping("/relatorio")
+    public ResponseEntity<Void> getRelatorio(HttpServletResponse response,
+                                             @AuthenticationPrincipal JwtUserDetails user) throws IOException {
+
+        // Obtém o CPF do cliente associado ao usuário autenticado.
+        String cpf = clienteService.findByUserId(user.getId()).getCpf();
+
+        // Adiciona o CPF como parâmetro para o relatório Jasper
+        jasperService.addParams("CPF", cpf);
+
+        // Gera o relatório em formato PDF
+        byte[] bytes = jasperService.generateReport();
+
+        // Configura o tipo de conteúdo da resposta como PDF e define o cabeçalho para exibição inline
+        response.setContentType(MediaType.APPLICATION_PDF_VALUE);
+        response.setHeader("Content-Disposition", "inline; filename=" + System.currentTimeMillis() + ".pdf");
+
+        // Escreve o conteúdo do PDF no fluxo de saída da resposta
+        response.getOutputStream().write(bytes);
+
+        // Retorna uma resposta HTTP 200 OK sem conteúdo adicional
+        return ResponseEntity.ok().build();
+    }
+
 }
 
